@@ -68,9 +68,11 @@
 
     </style>
 </head>
-<body>
+<body id="corpo">
     <button onclick="esconder()">Color-picker</button>
     <button onclick="selecionar_cor()">Selecionar Cor</button>
+    <button onclick="tela_cheia()">Tela cheia</button>
+    <button onclick="sair_tela_cheia()">Sair tela cheia</button>
     <div class="container" id="color-picker-id">
         <div class="colorjoe"></div>
         <div class="config">
@@ -95,6 +97,32 @@
             var colorpickerelemento = document.getElementById('color-picker-id');
             colorpickerelemento.classList.toggle('oculto')
 
+        }
+        function tela_cheia() {
+            // element which needs to enter full-screen mode
+            var element = document.getElementById('corpo');
+
+            // make the element go to full-screen mode
+            element.requestFullscreen()
+                .then(function() {
+                    // element has entered fullscreen mode successfully
+                })
+                .catch(function(error) {
+                    // element could not enter fullscreen mode
+                });
+
+        }
+
+        function sair_tela_cheia() {
+            document.exitFullscreen()
+            .then(function() {
+                // element has exited fullscreen mode
+            })
+            .catch(function(error) {
+                // element could not exit fullscreen mode
+                // error message
+                console.log(error.message);
+            });
         }
 
         class ColorPicker {
