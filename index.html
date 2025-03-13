@@ -51,6 +51,16 @@
             margin-bottom: 15px;
         }
 
+        .hex-input {
+            display: block;
+            margin: 0 auto 15px;
+            width: 100%;
+            padding: 5px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1em;
+        }
+
         .selected-color,
         .saved-color {
             height: 15px;
@@ -65,7 +75,6 @@
         .oculto{
             display: none;
         }
-
     </style>
 </head>
 <body id="corpo">
@@ -77,6 +86,7 @@
         <div class="colorjoe"></div>
         <div class="config">
             <div class="config-title">Selected Color</div>
+            <input type="text" class="hex-input" id="hexInput" placeholder="#FFFFFF">
             <div class="selected-color-text" id="idcor"></div>
             <div class="selected-color"></div>
             <div class="config-title">Saved Colors</div>
@@ -89,40 +99,29 @@
     </div>
     <script>
         function selecionar_cor(){
-            var cor = document.getElementById('idcor').innerText
-            console.log(cor)
+            var cor = document.getElementById('idcor').innerText;
+            console.log(cor);
             document.body.style.backgroundColor = cor;
         }
+
         function esconder(){
             var colorpickerelemento = document.getElementById('color-picker-id');
-            colorpickerelemento.classList.toggle('oculto')
-
+            colorpickerelemento.classList.toggle('oculto');
         }
+
         function tela_cheia() {
-            // element which needs to enter full-screen mode
             var element = document.documentElement;
-
-            // make the element go to full-screen mode
             element.requestFullscreen()
-                .then(function() {
-                    // element has entered fullscreen mode successfully
-                })
-                .catch(function(error) {
-                    // element could not enter fullscreen mode
-                });
-
+                .then(function() {})
+                .catch(function(error) {});
         }
 
         function sair_tela_cheia() {
             document.exitFullscreen()
-            .then(function() {
-                // element has exited fullscreen mode
-            })
-            .catch(function(error) {
-                // element could not exit fullscreen mode
-                // error message
-                console.log(error.message);
-            });
+                .then(function() {})
+                .catch(function(error) {
+                    console.log(error.message);
+                });
         }
 
         class ColorPicker {
@@ -132,8 +131,23 @@
                 this.selectedColor = null;
                 this.savedColors = this.getSavedColors();
 
+                // Certifique-se de que o campo hexInput existe antes de acessá-lo
+                this.hexInput = this.root.querySelector(".hex-input");
+                if (!this.hexInput) {
+                    console.error("Elemento .hex-input não encontrado!");
+                    return;
+                }
+
                 this.colorjoe.show();
                 this.setSelectedColor("#009578");
+
+                // Adiciona um listener ao campo de entrada hexadecimal
+                this.hexInput.addEventListener("input", () => {
+                    const hexValue = this.hexInput.value.trim();
+                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexValue)) {
+                        this.setSelectedColor(hexValue);
+                    }
+                });
 
                 this.colorjoe.on("change", color => {
                     this.setSelectedColor(color.hex(), true);
@@ -161,6 +175,11 @@
                 if (!skipCjUpdate) {
                     this.colorjoe.set(color);
                 }
+
+                // Atualiza o campo de entrada hexadecimal apenas se ele existir
+                if (this.hexInput) {
+                    this.hexInput.value = color;
+                }
             }
 
             getSavedColors() {
@@ -182,7 +201,10 @@
             }
         }
 
-        const cp = new ColorPicker(document.querySelector(".container"));
+        // Inicializa o ColorPicker
+        document.addEventListener("DOMContentLoaded", () => {
+            const cp = new ColorPicker(document.querySelector(".container"));
+        });
     </script>
 </body>
 </html>
