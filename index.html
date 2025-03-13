@@ -148,6 +148,7 @@
                 this.colorjoe = colorjoe.rgb(this.root.querySelector(".colorjoe"));
                 this.selectedColor = null;
                 this.savedColors = this.getSavedColors();
+                this.saveIndex = 0; // Índice para sobrescrever cores salvas
 
                 // Certifique-se de que o campo hexInput existe antes de acessá-lo
                 this.hexInput = this.root.querySelector(".hex-input");
@@ -231,12 +232,11 @@
             }
 
             saveSelectedColor() {
-                const index = this.savedColors.indexOf("#ffffff");
-                if (index !== -1) {
-                    this.saveColor(this.selectedColor, index);
-                } else {
-                    alert("Não há espaço disponível para salvar mais cores.");
-                }
+                // Salva a cor no índice atual e incrementa o índice para a próxima vez
+                this.saveColor(this.selectedColor, this.saveIndex);
+
+                // Incrementa o índice circularmente (0 a 4)
+                this.saveIndex = (this.saveIndex + 1) % this.savedColors.length;
             }
         }
 
