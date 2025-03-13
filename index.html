@@ -74,7 +74,7 @@
             margin-bottom: 5px;
         }
 
-        .save-button, .animate-button {
+        .save-button, .animate-button, .random-button {
             display: block;
             margin: 10px auto;
             padding: 5px 10px;
@@ -86,7 +86,7 @@
             font-family: sans-serif;
         }
 
-        .save-button:hover, .animate-button:hover {
+        .save-button:hover, .animate-button:hover, .random-button:hover {
             background-color: #0056b3;
         }
 
@@ -109,6 +109,7 @@
             <div class="selected-color"></div>
             <button class="save-button" id="saveButton">Salvar Cor</button>
             <button class="animate-button" id="animateButton">Ativar Animação</button>
+            <button class="random-button" id="randomButton">Gerar Cores Aleatórias</button>
             <div class="config-title">Saved Colors</div>
             <div class="saved-color"></div>
             <div class="saved-color"></div>
@@ -153,6 +154,8 @@
                 this.saveIndex = 0; // Índice para sobrescrever cores salvas
                 this.animationInterval = null; // Intervalo para animação
                 this.isAnimating = false; // Estado da animação
+                this.randomInterval = null; // Intervalo para cores aleatórias
+                this.isRandomizing = false; // Estado de randomização
 
                 // Certifique-se de que o campo hexInput existe antes de acessá-lo
                 this.hexInput = this.root.querySelector(".hex-input");
@@ -172,6 +175,13 @@
                 this.animateButton = this.root.querySelector(".animate-button");
                 if (!this.animateButton) {
                     console.error("Elemento .animate-button não encontrado!");
+                    return;
+                }
+
+                // Botão para gerar cores aleatórias
+                this.randomButton = this.root.querySelector(".random-button");
+                if (!this.randomButton) {
+                    console.error("Elemento .random-button não encontrado!");
                     return;
                 }
 
@@ -198,6 +208,10 @@
 
                 this.animateButton.addEventListener("click", () => {
                     this.toggleAnimation();
+                });
+
+                this.randomButton.addEventListener("click", () => {
+                    this.toggleRandomColors();
                 });
 
                 this.root.querySelectorAll(".saved-color").forEach((el, i) => {
@@ -264,11 +278,11 @@
                     // Desativa a animação
                     clearInterval(this.animationInterval);
                     this.isAnimating = false;
-                    this.animateButton.textContent = "Ativar Animação";
+                    this.animateButton.textContent = "Ativar Animação Lenta";
                 } else {
                     // Ativa a animação
                     this.isAnimating = true;
-                    this.animateButton.textContent = "Desativar Animação";
+                    this.animateButton.textContent = "Desativar Animação Lenta";
 
                     // Inicia a animação
                     this.animationInterval = setInterval(() => {
@@ -276,6 +290,25 @@
                         const newColor = this.generateSimilarColor(currentColor);
                         this.setSelectedColor(this.rgbToHex(newColor.r, newColor.g, newColor.b));
                     }, 100); // Altera a cor a cada 100ms
+                }
+            }
+
+            toggleRandomColors() {
+                if (this.isRandomizing) {
+                    // Desativa a geração de cores aleatórias
+                    clearInterval(this.randomInterval);
+                    this.isRandomizing = false;
+                    this.randomButton.textContent = "Gerar Cores Aleatórias";
+                } else {
+                    // Ativa a geração de cores aleatórias
+                    this.isRandomizing = true;
+                    this.randomButton.textContent = "Parar Cores Aleatórias";
+
+                    // Inicia a geração de cores aleatórias
+                    this.randomInterval = setInterval(() => {
+                        const randomColor = this.generateRandomColor();
+                        this.setSelectedColor(randomColor);
+                    }, 100); // Altera a cor a cada 500ms
                 }
             }
 
@@ -300,6 +333,14 @@
                     g: clamp(g + randomChange()),
                     b: clamp(b + randomChange())
                 };
+            }
+
+            generateRandomColor() {
+                // Gera valores RGB completamente aleatórios
+                const r = Math.floor(Math.random() * 256);
+                const g = Math.floor(Math.random() * 256);
+                const b = Math.floor(Math.random() * 256);
+                return this.rgbToHex(r, g, b);
             }
         }
 
