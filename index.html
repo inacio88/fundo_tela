@@ -72,7 +72,24 @@
         .saved-color:not(:last-of-type) {
             margin-bottom: 5px;
         }
-        .oculto{
+
+        .save-button {
+            display: block;
+            margin: 10px auto;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: sans-serif;
+        }
+
+        .save-button:hover {
+            background-color: #0056b3;
+        }
+
+        .oculto {
             display: none;
         }
     </style>
@@ -89,6 +106,7 @@
             <input type="text" class="hex-input" id="hexInput" placeholder="#FFFFFF">
             <div class="selected-color-text" id="idcor"></div>
             <div class="selected-color"></div>
+            <button class="save-button" id="saveButton">Salvar Cor</button>
             <div class="config-title">Saved Colors</div>
             <div class="saved-color"></div>
             <div class="saved-color"></div>
@@ -98,13 +116,13 @@
         </div>
     </div>
     <script>
-        function selecionar_cor(){
+        function selecionar_cor() {
             var cor = document.getElementById('idcor').innerText;
             console.log(cor);
             document.body.style.backgroundColor = cor;
         }
 
-        function esconder(){
+        function esconder() {
             var colorpickerelemento = document.getElementById('color-picker-id');
             colorpickerelemento.classList.toggle('oculto');
         }
@@ -112,14 +130,14 @@
         function tela_cheia() {
             var element = document.documentElement;
             element.requestFullscreen()
-                .then(function() {})
-                .catch(function(error) {});
+                .then(function () { })
+                .catch(function (error) { });
         }
 
         function sair_tela_cheia() {
             document.exitFullscreen()
-                .then(function() {})
-                .catch(function(error) {
+                .then(function () { })
+                .catch(function (error) {
                     console.log(error.message);
                 });
         }
@@ -138,6 +156,13 @@
                     return;
                 }
 
+                // Botão para salvar a cor
+                this.saveButton = this.root.querySelector(".save-button");
+                if (!this.saveButton) {
+                    console.error("Elemento .save-button não encontrado!");
+                    return;
+                }
+
                 this.colorjoe.show();
                 this.setSelectedColor("#009578");
 
@@ -151,6 +176,10 @@
 
                 this.colorjoe.on("change", color => {
                     this.setSelectedColor(color.hex(), true);
+                });
+
+                this.saveButton.addEventListener("click", () => {
+                    this.saveSelectedColor();
                 });
 
                 this.root.querySelectorAll(".saved-color").forEach((el, i) => {
@@ -198,6 +227,16 @@
             saveColor(color, i) {
                 this.savedColors[i] = color;
                 localStorage.setItem("colorpicker-saved", JSON.stringify(this.savedColors));
+                this.showSavedColor(this.root.querySelectorAll(".saved-color")[i], color);
+            }
+
+            saveSelectedColor() {
+                const index = this.savedColors.indexOf("#ffffff");
+                if (index !== -1) {
+                    this.saveColor(this.selectedColor, index);
+                } else {
+                    alert("Não há espaço disponível para salvar mais cores.");
+                }
             }
         }
 
